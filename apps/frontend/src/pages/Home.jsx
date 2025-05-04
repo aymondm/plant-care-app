@@ -11,9 +11,9 @@ function Home() {
       return JSON.parse(stored);
     }
     return [
-      { id: 1, name: "Monstera", type: "Monstera deliciosa" },
-      { id: 2, name: "Pothos", type: "Epipremmum aureum" },
-      { id: 3, name: "Cactus", type: "Carnegiea gigantea" },
+      { id: 1, name: "Monstera", type: "Monstera deliciosa", interval:3 },
+      { id: 2, name: "Pothos", type: "Epipremmum aureum", interval:1 },
+      { id: 3, name: "Cactus", type: "Carnegiea gigantea", interval:2 },
     ];
   });
 
@@ -33,10 +33,10 @@ function Home() {
     );
   };
 
-  const updatePlant = (id, newName) => {
+  const updatePlant = (id, newName, newType, newInterval) => {
     setPlants((currentPlants) =>
       currentPlants.map((plant) =>
-        plant.id === id ? { ...plant, name: newName } : plant
+        plant.id === id ? { ...plant, name: newName, type: newType, interval:newInterval } : plant
       )
     );
   };
