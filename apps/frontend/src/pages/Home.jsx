@@ -3,24 +3,27 @@ import PlantCard from "../components/PlantCard";
 import PlantForm from "../components/PlantForm";
 
 function Home() {
-  // initialize plants with stored data (or default)
-  const [plants, setPlants] = useState(() => {
-    // runs only once on mount
-    const stored = localStorage.getItem("plants");
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    return [
-      { id: 1, name: "Monstera", type: "Monstera deliciosa", interval:3 },
-      { id: 2, name: "Pothos", type: "Epipremmum aureum", interval:1 },
-      { id: 3, name: "Cactus", type: "Carnegiea gigantea", interval:2 },
-    ];
-  });
+  // initializes plants with an empty array and the loading/erorr states
+  const [plants, setPlants] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null)
 
-  // whenever plants are changed, save them to localStorage
+  // fetches plant list (once on mount)
   useEffect(() => {
-    localStorage.setItem("plants", JSON.stringify(plants));
-  }, [plants]);
+    setLoading(true);
+    fetch("http://127.0.0.1:5000/api/plants")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load plants");
+        return res.json();
+      })
+      .then((data) => {
+        setPlants(data);
+        setError(null);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   // function called by PlantForm
   const addPlant = (newPlant) => {
@@ -36,12 +39,15 @@ function Home() {
   const updatePlant = (id, newName, newType, newInterval) => {
     setPlants((currentPlants) =>
       currentPlants.map((plant) =>
-        plant.id === id ? { ...plant, name: newName, type: newType, interval:newInterval } : plant
+        plant.id === id
+          ? { ...plant, name: newName, type: newType, interval: newInterval }
+          : plant
       )
     );
   };
 
-  const [searchInput, setSearchInput] = useState("");
+  if (loading) return <p>Loading</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="home">
