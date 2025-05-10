@@ -4,21 +4,28 @@ function PlantForm({ addPlant }) {
   const [plantName, setPlantName] = useState("");
   const [plantType, setPlantType] = useState("");
   const [waterInterval, setWaterInterval] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(""); // trackers when the form is submitting to disable the submit button
+  const [error, setError] = useState(""); // holds any error message to submit under the inputs
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // prevents page refresh
+    setError(null); // clears errors
+    setIsSubmitting(true);
 
-    // checks for valid input
-    addPlant({
-      // addPlant is called to add the new plant to the list
-      id: Date.now(),
-      name: plantName,
-      type: plantType,
-      interval: parseInt(waterInterval, 10) // converts user input to base-10 integer
-    }); //
-    setPlantName(""); // clears input
-    setPlantType("");
-    setWaterInterval("");
+    try {
+      await addPlant({ // handles POST and updates the plant list
+        name: plantName,
+        type: plantType,
+        interval: parseInt(waterInterval, 10), // converts user input to base-10 integer
+      }); //
+      setPlantName(""); // clears input
+      setPlantType("");
+      setWaterInterval("");
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -45,15 +52,18 @@ function PlantForm({ addPlant }) {
         placeholder="Water every x days"
         required
       />
+      {/* Shows error message if something goes wrong */}
+      {error && <p className="error">{error}</p>}
       <button
         type="submit"
         disabled={
+          isSubmitting ||
           !plantName.trim() ||
           !plantType.trim() ||
           !(parseInt(waterInterval, 10) > 0)
         }
       >
-        Add Plant
+        {isSubmitting ? "Adding..." : "Add Plant"}
       </button>
     </form>
   );
