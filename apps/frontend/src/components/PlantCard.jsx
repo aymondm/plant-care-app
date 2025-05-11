@@ -6,6 +6,33 @@ function PlantCard({ plant, onDelete, onUpdate }) {
   const [editedName, setEditedName] = useState(plant.name); // tracks new plant name
   const [editedType, setEditedType] = useState(plant.type); // tracks new plant type
   const [editedInterval, setEditedInterval] = useState(plant.interval); // tracks new plant interval
+  const [error, setError] = useState("");
+
+  // helper for saving changes with error capture
+  const handleSave = async () => {
+    try {
+      await onUpdate(
+        plant.id,
+        editedName,
+        editedType,
+        parseInt(editedInterval, 10)
+      );
+      setIsEditing(false);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // helper for deleting with error capture
+  const handleDelete = async () => {
+    try {
+      await onDelete(plant.id);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="plant-card">
@@ -27,12 +54,31 @@ function PlantCard({ plant, onDelete, onUpdate }) {
             value={editedInterval}
             onChange={(e) => setEditedInterval(e.target.value)}
           />
-          <button
-            disabled={!editedName.trim() || !editedType.trim() || !editedInterval}
+          {/* <button
+            disabled={
+              !editedName.trim() ||
+              !editedType.trim() ||
+              !parseInt(editedInterval, 10) > 0
+            }
             onClick={() => {
-              onUpdate(plant.id, editedName, editedType, editedInterval);
+              onUpdate(
+                plant.id,
+                editedName,
+                editedType,
+                parseInt(editedInterval, 10)
+              );
               setIsEditing(false);
             }}
+          >
+            Save
+          </button> */}
+          <button
+            disabled={
+              !editedName.trim() ||
+              !editedType.trim() ||
+              !(parseInt(editedInterval, 10) > 0)
+            }
+            onClick={handleSave}
           >
             Save
           </button>
@@ -46,6 +92,7 @@ function PlantCard({ plant, onDelete, onUpdate }) {
           >
             Cancel
           </button>
+          {error && <p>{error}</p>}
         </>
       ) : (
         <>
@@ -54,7 +101,8 @@ function PlantCard({ plant, onDelete, onUpdate }) {
           <p>{plant.type}</p>
           <p>Watered every {plant.interval} days</p>
           <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={() => onDelete(plant.id)}>Delete</button>
+          <button onClick={handleDelete}>Delete</button>
+          {error && <p>{error}</p>}
         </>
       )}
     </div>

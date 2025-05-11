@@ -24,5 +24,23 @@ def add_plant():
     plants.append(plant) # store
     return jsonify(plant), 201 # return plant and success code
 
+@app.route("/api/plants/<int:id>", methods=["PUT"])
+def update_plant(id):
+    data = request.get_json()
+    for p in plants:
+        if p["id"] == id:
+            p.update(data) # only update changed data
+            return jsonify(p), 200
+    return jsonify({"error": "Not found"}), 404
+
+@app.route("/api/plants/<int:id>", methods=["DELETE"])
+def delete_plant(id):
+    global plants
+    new_plants = [p for p in plants if p["id"] != id] # creates a duplicate list without the given plant
+    if len(new_plants) == len(plants):
+        return jsonify({"error": "Not found"}), 404
+    plants[:] = new_plants # replaces original plants with new list by mutating the existing plants
+    return "", 204
+    
 if __name__ == "__main__":
     app.run(debug=True)
