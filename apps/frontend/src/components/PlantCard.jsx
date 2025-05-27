@@ -1,110 +1,35 @@
 import React, { useState } from "react";
 import "./PlantCard.css";
+import { useNavigate } from "react-router-dom";
 
-function PlantCard({ plant, onDelete, onUpdate }) {
-  const [isEditing, setIsEditing] = useState(false); // tracks whether plant name is being edited
-  const [editedName, setEditedName] = useState(plant.name); // tracks new plant name
-  const [editedType, setEditedType] = useState(plant.type); // tracks new plant type
-  const [editedInterval, setEditedInterval] = useState(plant.interval); // tracks new plant interval
-  const [error, setError] = useState("");
+// this component is for display and delete/edit buttons only
 
-  // helper for saving changes with error capture
-  const handleSave = async () => {
-    try {
-      await onUpdate(
-        plant.id,
-        editedName,
-        editedType,
-        parseInt(editedInterval, 10)
-      );
-      setIsEditing(false);
-      setError("");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+function PlantCard({ plant, onDelete }) {
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { id, name, type, interval } = plant;
 
   // helper for deleting with error capture
   const handleDelete = async () => {
     try {
       await onDelete(plant.id);
-      setError("");
+      setError(null);
     } catch (err) {
       setError(err.message);
     }
   };
 
+  const handleEdit = () => navigate(`/edit/${plant.id}`);
+
   return (
     <div className="plant-card">
-      {isEditing ? (
-        <>
-          {/* edit : show input + Save/Cancel buttons*/}
-          <input
-            type="text"
-            value={editedName}
-            onChange={(e) => setEditedName(e.target.value)}
-          />
-          <input
-            type="text"
-            value={editedType}
-            onChange={(e) => setEditedType(e.target.value)}
-          />
-          <input
-            type="number"
-            value={editedInterval}
-            onChange={(e) => setEditedInterval(e.target.value)}
-          />
-          {/* <button
-            disabled={
-              !editedName.trim() ||
-              !editedType.trim() ||
-              !parseInt(editedInterval, 10) > 0
-            }
-            onClick={() => {
-              onUpdate(
-                plant.id,
-                editedName,
-                editedType,
-                parseInt(editedInterval, 10)
-              );
-              setIsEditing(false);
-            }}
-          >
-            Save
-          </button> */}
-          <button
-            disabled={
-              !editedName.trim() ||
-              !editedType.trim() ||
-              !(parseInt(editedInterval, 10) > 0)
-            }
-            onClick={handleSave}
-          >
-            Save
-          </button>
-          <button
-            onClick={() => {
-              setEditedName(plant.name);
-              setEditedType(plant.type);
-              setEditedInterval(plant.interval);
-              setIsEditing(false);
-            }}
-          >
-            Cancel
-          </button>
-          {error && <p>{error}</p>}
-        </>
-      ) : (
-        <>
-          {/* view: show name + Edit/Delete */}
-          <h3>{plant.name}</h3>
-          <p>{plant.type}</p>
-          <p>Watered every {plant.interval} days</p>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={handleDelete}>Delete</button>
-          {error && <p>{error}</p>}
-        </>
-      )}
+      {/* view: show name + Edit/Delete */}
+      <h3>{name}</h3>
+      <p>{type}</p>
+      <p>Watered every {interval} days</p>
+      <button onClick={handleEdit}>Edit</button>
+      <button onClick={handleDelete}>Delete</button>
+      {error && <p className="error">{error}</p>}
     </div>
   );
 }

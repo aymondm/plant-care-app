@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function PlantForm({ addPlant }) {
-  const [plantName, setPlantName] = useState("");
-  const [plantType, setPlantType] = useState("");
-  const [waterInterval, setWaterInterval] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(""); // trackers when the form is submitting to disable the submit button
-  const [error, setError] = useState(""); // holds any error message to submit under the inputs
+// this component is a reusable form for name/type/interval (handles add & update)
+
+function PlantForm({
+  onSubmit,
+  initialName = "",
+  initialType = "",
+  initialInterval = "",
+  clearOnSubmit = true,
+}) {
+  // initializes state from props
+  const [plantName, setPlantName] = useState(initialName);
+  const [plantType, setPlantType] = useState(initialType);
+  const [waterInterval, setWaterInterval] = useState(initialInterval);
+  const [isSubmitting, setIsSubmitting] = useState(false); // trackers when the form is submitting to disable the submit button
+  const [error, setError] = useState(null); // holds any error message to submit under the inputs
+
+  // if initial props change on edit, update them into state
+  useEffect(() => {
+    setPlantName(initialName);
+    setPlantType(initialType);
+    setWaterInterval(initialInterval);
+    setError(null); // clears any leftover error if initial data changes
+  }, [initialName, initialType, initialInterval]);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevents page refresh
@@ -13,14 +30,18 @@ function PlantForm({ addPlant }) {
     setIsSubmitting(true);
 
     try {
-      await addPlant({ // handles POST and updates the plant list
+      await onSubmit({
+        // handles POST and updates the plant list
         name: plantName,
         type: plantType,
         interval: parseInt(waterInterval, 10), // converts user input to base-10 integer
-      }); //
-      setPlantName(""); // clears input
-      setPlantType("");
-      setWaterInterval("");
+      });
+      // only clear if adding plant
+      if (clearOnSubmit) {
+        setPlantName(""); // clears input
+        setPlantType("");
+        setWaterInterval("");
+      }
     } catch (err) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -30,26 +51,32 @@ function PlantForm({ addPlant }) {
 
   return (
     <form onSubmit={handleSubmit} className="plant-form">
+      <label htmlFor="name">Name:</label>
       <input
+        id="name"
         type="text"
         value={plantName} // stores user input in plantName
         onChange={(e) => setPlantName(e.target.value)} // passes user input to setPlantName
-        placeholder="Enter plane name"
+        placeholder="Enter plant name"
         required
       />
+      <label htmlFor="type">Type:</label>
       <input
+        id="type"
         type="text"
         value={plantType}
         onChange={(e) => setPlantType(e.target.value)}
         placeholder="Enter plant type"
         required
       />
+      <label htmlFor="interval">Water:</label>
       <input
+        id="interval"
         type="number"
         min="1"
         value={waterInterval}
         onChange={(e) => setWaterInterval(e.target.value)}
-        placeholder="Water every x days"
+        placeholder="Every x days"
         required
       />
       {/* Shows error message if something goes wrong */}
@@ -63,7 +90,7 @@ function PlantForm({ addPlant }) {
           !(parseInt(waterInterval, 10) > 0)
         }
       >
-        {isSubmitting ? "Adding..." : "Add Plant"}
+        {isSubmitting ? "Loading..." : "Submit"}
       </button>
     </form>
   );
