@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 function PlantCard({ plant, onDelete }) {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { id, name, type, interval } = plant;
+  const { id, name, type, watering_interval: wateringInterval } = plant;
 
   // helper for deleting with error capture
   const handleDelete = async () => {
@@ -26,7 +26,7 @@ function PlantCard({ plant, onDelete }) {
       {/* view: show name + Edit/Delete */}
       <h3>{name}</h3>
       <p>{type}</p>
-      <p>Watered every {interval} days</p>
+      <p>Watered every {wateringInterval} days</p>
       <button onClick={handleEdit}>Edit</button>
       <button onClick={handleDelete}>Delete</button>
       {error && <p className="error">{error}</p>}

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 
-// this component is a reusable form for name/type/interval (handles add & update)
+// this component is a reusable form for name/type/watering interval (handles add & update)
 
 function PlantForm({
   onSubmit,
   initialName = "",
   initialType = "",
-  initialInterval = "",
+  initialWateringInterval = "",
   clearOnSubmit = true,
 }) {
   // initializes state from props
   const [plantName, setPlantName] = useState(initialName);
   const [plantType, setPlantType] = useState(initialType);
-  const [waterInterval, setWaterInterval] = useState(initialInterval);
+  const [wateringInterval, setWateringInterval] = useState(
+    initialWateringInterval
+  );
   const [isSubmitting, setIsSubmitting] = useState(false); // trackers when the form is submitting to disable the submit button
   const [error, setError] = useState(null); // holds any error message to submit under the inputs
 
@@ -20,9 +22,9 @@ function PlantForm({
   useEffect(() => {
     setPlantName(initialName);
     setPlantType(initialType);
-    setWaterInterval(initialInterval);
+    setWateringInterval(initialWateringInterval);
     setError(null); // clears any leftover error if initial data changes
-  }, [initialName, initialType, initialInterval]);
+  }, [initialName, initialType, initialWateringInterval]);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // prevents page refresh
@@ -34,13 +36,13 @@ function PlantForm({
         // handles POST and updates the plant list
         name: plantName,
         type: plantType,
-        interval: parseInt(waterInterval, 10), // converts user input to base-10 integer
+        watering_interval: wateringInterval,
       });
       // only clear if adding plant
       if (clearOnSubmit) {
         setPlantName(""); // clears input
         setPlantType("");
-        setWaterInterval("");
+        setWateringInterval("");
       }
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -74,8 +76,8 @@ function PlantForm({
         id="interval"
         type="number"
         min="1"
-        value={waterInterval}
-        onChange={(e) => setWaterInterval(e.target.value)}
+        value={wateringInterval}
+        onChange={(e) => setWateringInterval(e.target.valueAsNumber)}
         placeholder="Every x days"
         required
       />
@@ -87,7 +89,8 @@ function PlantForm({
           isSubmitting ||
           !plantName.trim() ||
           !plantType.trim() ||
-          !(parseInt(waterInterval, 10) > 0)
+          typeof wateringInterval !== "number" ||
+          wateringInterval < 1
         }
       >
         {isSubmitting ? "Loading..." : "Submit"}

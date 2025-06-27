@@ -24,7 +24,6 @@ function Home({ plants, removePlant }) {
       <Link to="/add" className="add-button">
         Add Plant
       </Link>
-
       {plants
         .filter((plant) => plant.name.toLowerCase().includes(searchTerm))
         .map((plant) => (

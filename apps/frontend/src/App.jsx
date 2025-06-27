@@ -15,24 +15,23 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const loadPlants = async () => {
+    // defines async helper function, returns a promise object
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/plants`); // makes GET network request and waits for it
+      if (!res.ok) throw new Error("Failed to load plants"); // if the server responds with an error status throw to jump to catch
+      const data = await res.json(); // gets the JSON and waits for it
+      setPlants(data); // puts the received data into state
+      setError(null); // clears error
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false); // turn off loading
+    }
+  };
+
   // fetches plant list (wrapped in useEffect and [] so that it only runs once when the component mounts)
   useEffect(() => {
-    const loadPlants = async () => {
-      // defines async helper function, returns a promise object
-      setLoading(true); // show loading state
-      try {
-        const res = await fetch(`http://127.0.0.1:5000/api/plants`); // makes GET network request and waits for it
-        if (!res.ok) throw new Error("Failed to load plants"); // if the server responds with an error status throw to jump to catch
-        const data = await res.json(); // gets the JSON and waits for it
-        setPlants(data); // puts the received data into state
-        setError(null); // clears error
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false); // turn off loading
-      }
-    };
-
     loadPlants(); // run the async function
   }, []);
 
@@ -67,21 +66,16 @@ function App() {
     }
   };
 
-  const updatePlant = async (id, newName, newType, newInterval) => {
+  const updatePlant = async (id, updates) => {
+    // updates = { name, type, watering_interval }
     const res = await fetch(`http://127.0.0.1:5000/api/plants/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newName,
-        type: newType,
-        interval: newInterval,
-      }),
+      body: JSON.stringify(updates),
     });
     if (!res.ok) throw new Error("Failed to update plant");
-    const updatedPlant = await res.json();
-    setPlants((currentPlants) =>
-      currentPlants.map((p) => (p.id === id ? updatedPlant : p))
-    );
+    const updatedPlant = await res.json(); // returned plant
+    await loadPlants(); // reloads the full list so that Home.jsx renders the updated data
   };
 
   return (
@@ -97,13 +91,7 @@ function App() {
             <Route path="/add" element={<AddPlant addPlant={addPlant} />} />
             <Route
               path="/edit/:id"
-              element={
-                <EditPlant
-                  plants={plants}
-                  updatePlant={updatePlant}
-                  loading={loading}
-                />
-              }
+              element={<EditPlant updatePlant={updatePlant} />}
             />
             <Route path="*" element={<NotFound />} />
             {/* any URL that doesn't match above pages will show 404 page */}
