@@ -1,0 +1,119 @@
+.layout {
+  font-family: "Archivo Black", sans-serif;
+  font-style: normal;
+  background-color: #f2faf5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.header {
+  background-color: #f2faf5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 1.25rem 2rem;
+  padding-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #485b4c;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #78a980;
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  font-size: 1.75rem;
+}
+
+.nav a {
+  color: #6d8a6f;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 2px;
+}
+
+.nav a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #2e7d32;
+  transition: width 0.2s ease-in-out;
+}
+
+.nav a:hover::after {
+  width: 100%;
+}
+
+.main {
+  flex-grow: 1;
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 5rem;
+  font-size: 1.75rem;
+  font-weight: 500;
+  color: #4a6847;
+  font-family: "Space Grotesk", sans-serif;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.error {
+  text-align: center;
+  margin-top: 5rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #a94442; /* earthy red */
+  background-color: #fcebea;
+  border: 1.5px solid #f5c6cb;
+  border-radius: 0.5rem;
+  font-family: "Space Grotesk", sans-serif;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  padding: 1.25rem 1rem;
+  color: #6b8772;
+  background-color: #f2faf5;
+  font-family: "Space Grotesk", sans-serif;
+  border-top: 1px solid #e0e0e0;
+  margin-top: auto;
+}
+
+.footer span {
+  font-weight: 500;
+  color: #4a6847;
+}

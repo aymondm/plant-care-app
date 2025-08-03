@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import PlantForm from "../components/PlantForm";
+import styles from "./EditPlant.module.css";
 
 // this page reads the :id from the URL, loads that plant's data, populates the form, and calls updatePlant
 
@@ -46,16 +47,18 @@ function EditPlant({ updatePlant }) {
   if (error) return <Navigate to="*" replace />;
 
   return (
-    <div>
-      <h2>Edit Plant</h2>
-      {/* pass plant's initial data into the form so it pre-fills */}
-      <PlantForm
-        initialName={initialName}
-        initialType={initialType}
-        initialWateringInterval={initialWateringInterval}
-        onSubmit={handleUpdate}
-        clearOnSubmit={false} // doesn't clear the form when a user saves on edit
-      />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>EDIT PLANT</h2>
+        {/* pass plant's initial data into the form so it pre-fills */}
+        <PlantForm
+          initialName={initialName}
+          initialType={initialType}
+          initialWateringInterval={initialWateringInterval}
+          onSubmit={handleUpdate}
+          clearOnSubmit={false} // doesn't clear the form when a user saves on edit
+        />
+      </div>
     </div>
   );
 }

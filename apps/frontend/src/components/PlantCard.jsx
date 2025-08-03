@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./PlantCard.css";
+import styles from "./PlantCard.module.css";
 import { useNavigate } from "react-router-dom";
 
 // this component is for display and delete/edit buttons only
@@ -22,13 +22,19 @@ function PlantCard({ plant, onDelete }) {
   const handleEdit = () => navigate(`/edit/${plant.id}`);
 
   return (
-    <div className="plant-card">
+    <div className={styles.card}>
       {/* view: show name + Edit/Delete */}
-      <h3>{name}</h3>
-      <p>{type}</p>
-      <p>Watered every {wateringInterval} days</p>
-      <button onClick={handleEdit}>Edit</button>
-      <button onClick={handleDelete}>Delete</button>
+      <h3 className={styles.cardTitle}>{name}</h3>
+      <p className={styles.cardSubtitle}>{type}</p>
+      <p className={styles.cardInfo}>Water every {wateringInterval} days</p>
+      <div className={styles.cardActions}>
+        <button className={styles.button} onClick={handleEdit}>
+          Edit
+        </button>
+        <button className={styles.button} onClick={handleDelete}>
+          Delete
+        </button>
+      </div> 
       {error && <p className="error">{error}</p>}
     </div>
   );

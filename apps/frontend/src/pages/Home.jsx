@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PlantCard from "../components/PlantCard";
 import { Link } from "react-router-dom";
+import styles from "./Home.module.css";
 
 // this page displays the plants, and handles search, delete, and navigation to edit
 
@@ -9,26 +10,27 @@ function Home({ plants, removePlant }) {
   const searchTerm = searchInput.toLowerCase();
 
   return (
-    <div className="home">
-      <h2>Plants</h2>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>MY PLANTS</h2>
+        <label htmlFor="search-input"></label>
+        <input
+          id="search-input"
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)} // updates search input
+          placeholder="Search Plants"
+          className={styles.searchInput}
+        />
+      </div>
 
-      <label htmlFor="search-input">Search Plants:</label>
-      <input
-        id="search-input"
-        type="text"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)} // updates search input
-        placeholder="Search plants"
-      />
-
-      <Link to="/add" className="add-button">
-        Add Plant
-      </Link>
-      {plants
-        .filter((plant) => plant.name.toLowerCase().includes(searchTerm))
-        .map((plant) => (
-          <PlantCard key={plant.id} plant={plant} onDelete={removePlant} />
-        ))}
+      <div className={styles.plantList}>
+        {plants
+          .filter((plant) => plant.name.toLowerCase().includes(searchTerm))
+          .map((plant) => (
+            <PlantCard key={plant.id} plant={plant} onDelete={removePlant} />
+          ))}
+      </div>
     </div>
   );
 }

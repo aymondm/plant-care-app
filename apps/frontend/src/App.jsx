@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import "./App.css";
+import styles from "./components/Layout.module.css";
+import getUserId from "./utilities/userId";
 
 function App() {
   // lazy loads each page component
@@ -17,9 +18,12 @@ function App() {
 
   const loadPlants = async () => {
     // defines async helper function, returns a promise object
+    const userId = getUserId();
     try {
-      const res = await fetch(`http://127.0.0.1:5000/api/plants`); // makes GET network request and waits for it
-      if (!res.ok) throw new Error("Failed to load plants"); // if the server responds with an error status throw to jump to catch
+      const res = await fetch(
+        `http://127.0.0.1:5000/api/plants?user_id=${userId}`
+      ); // makes GET network request and waits for it
+      if (!res.ok) throw new Error("Failed to load plants."); // if the server responds with an error status throw to jump to catch
       const data = await res.json(); // gets the JSON and waits for it
       setPlants(data); // puts the received data into state
       setError(null); // clears error
@@ -35,21 +39,22 @@ function App() {
     loadPlants(); // run the async function
   }, []);
 
-  if (loading) return <p>Loading</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className={styles.loading}>Loading...</p>;
+  if (error) return <p className={styles.error}>Error: {error}</p>;
 
   // function called by PlantForm: wires up React addplant to POST.
   // Sends new plant to server, then updates state with the response
   const addPlant = async (newPlant) => {
+    const userId = getUserId();
     const res = await fetch(`http://127.0.0.1:5000/api/plants`, {
       // pause until the promise resolves
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newPlant),
+      body: JSON.stringify({ ...newPlant, user_id: userId }),
     });
     if (!res.ok) {
       // error check (true for 200-299)
-      throw new Error("Failed to add plant");
+      throw new Error("Failed to add plant.");
     }
     const addedPlant = await res.json(); // pause until res.json (response body sent by backend) promise resolves
     setPlants((currentPlants) => [...currentPlants, addedPlant]); // update the state when data is available
@@ -81,7 +86,7 @@ function App() {
   return (
     // enables client-side routing (allows navigation between different routes within the app without requiring server requests)
     <BrowserRouter>
-      <Suspense fallback={<p>Loading</p>}>
+      <Suspense fallback={<p className={styles.loading}>Loading...</p>}>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route

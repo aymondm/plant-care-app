@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import PlantForm from "../components/PlantForm";
-
+import styles from "./AddPlant.module.css";
 // this page renders PlantForm, handles its own form state and submission (calls addPlant)
 
 function AddPlant({ addPlant }) {
@@ -16,10 +16,12 @@ function AddPlant({ addPlant }) {
   };
 
   return (
-    <div>
-      <h2>Add New Plant</h2>
-      {/* PlantForm calls handleAdd(newPlant) on submit */}
-      <PlantForm onSubmit={handleAdd} />
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.title}>NEW PLANT</h2>
+        {/* PlantForm calls handleAdd(newPlant) on submit */}
+        <PlantForm onSubmit={handleAdd} />
+      </div>
     </div>
   );
 }
